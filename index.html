@@ -4,9 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPC Marian Quiz Bee Timer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
-
+    <title>CPC Bible Quiz Timer</title>
+    <!-- Offline Font Stack: Fallback to system fonts for reliable offline use -->
     <style>
         :root {
             --primary-blue: #003366;
@@ -20,7 +19,8 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            /* Using a system font stack for offline support */
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             text-align: center;
             margin: 0;
             padding: 0;
@@ -31,6 +31,7 @@
             justify-content: center;
             flex-direction: column;
             color: var(--white);
+            overflow: hidden;
         }
 
         .container {
@@ -70,7 +71,6 @@
             cursor: pointer;
             border-radius: 10px;
             transition: all 0.3s ease-in-out;
-            font-family: 'Poppins', sans-serif;
             font-weight: 700;
             text-transform: uppercase;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -175,8 +175,8 @@
             /* MASSIVE 'TIME'S UP' TEXT */
             font-weight: bold;
             color: var(--danger);
-            animation: shake 0.5s ease-in-out infinite;
-            text-shadow: 0 0 30px rgba(231, 76, 60, 0.5);
+            animation: megaShake 0.5s ease-in-out infinite;
+            text-shadow: 0 0 50px rgba(231, 76, 60, 0.8);
         }
 
         @keyframes fadeIn {
@@ -191,17 +191,17 @@
             }
         }
 
-        @keyframes shake {
+        @keyframes megaShake {
             0% {
-                transform: rotate(-3deg);
+                transform: rotate(-3deg) scale(1);
             }
 
             50% {
-                transform: rotate(3deg);
+                transform: rotate(3deg) scale(1.1);
             }
 
             100% {
-                transform: rotate(-3deg);
+                transform: rotate(-3deg) scale(1);
             }
         }
 
@@ -244,7 +244,8 @@
         <button class="info" onclick="showInstructions()">How to use?</button>
     </div>
 
-    <audio id="alarm" src="beep.mp3"></audio>
+    <!-- Alarm sound loops until manually stopped -->
+    <audio id="alarm" src="beep.mp3" loop></audio>
 
     <!-- Timer Modal -->
     <div id="timerModal" class="modal">
@@ -273,7 +274,7 @@
                     remaining.</li>
                 <li><strong>Reset:</strong> Use the "Reset Timer" button to stop and clear everything.</li>
                 <li><strong>Dismissing Modals:</strong> Click anywhere on the screen when the timer is finished to reset
-                    and go back.</li>
+                    and go back. (Nakalock to ng 1.5 seconds para hindi agad mawala)</li>
             </ul>
             <button onclick="closeInstructions()" style="width: 100%; margin-top: 10px;">Got it!</button>
         </div>
@@ -282,9 +283,11 @@
     <script>
         let countdown;
         let alarmTimeout;
+        let canDismiss = false;
 
         function startTimer(duration) {
             resetTimer();
+            canDismiss = false;
 
             let timeLeft = duration;
             const timerDisplay = document.getElementById("timer");
@@ -312,6 +315,11 @@
                     alarm.play();
                     timerModal.style.display = "none";
                     timeUpModal.style.display = "flex";
+
+                    // Prevent immediate accidental dismissal
+                    setTimeout(() => {
+                        canDismiss = true;
+                    }, 1500);
                 }
             }, 1000);
         }
@@ -336,7 +344,9 @@
 
         // Close modal when clicking anywhere on the screen for time up
         document.getElementById("timeUpModal").addEventListener("click", function () {
-            resetTimer();
+            if (canDismiss) {
+                resetTimer();
+            }
         });
 
         document.getElementById("timerModal").addEventListener("click", function () {
