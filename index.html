@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPC Marian Quiz Bee Timer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #001f3f;
+            --accent-blue: #0056b3;
+            --dark-grey: #2c3e50;
+            --white: #ffffff;
+            --light-grey: #f4f4f4;
+            --danger: #e74c3c;
+            --warning: #ff9d00;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--secondary-blue) 0%, #000000 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: var(--white);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 1s ease-in-out;
+            max-width: 700px;
+            width: 90%;
+            border-top: 8px solid var(--primary-blue);
+            color: var(--dark-grey);
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 3.5vw;
+            margin-bottom: 20px;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .round-selection {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        button {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 18px 25px;
+            font-size: 1.4vw;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease-in-out;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background: var(--accent-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        button.reset {
+            background: var(--dark-grey);
+            grid-column: span 2;
+            margin-top: 10px;
+        }
+
+        button.reset:hover {
+            background: #1a252f;
+        }
+
+        button.info {
+            background: #6c757d;
+            font-size: 1vw;
+            padding: 10px 20px;
+            margin-top: 15px;
+            text-transform: none;
+        }
+
+        button.info:hover {
+            background: #5a6268;
+        }
+
+        /* Modal Base */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .modal-content {
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Instructions Modal Variation */
+        #instructionsModal .modal-content-box {
+            background: var(--white);
+            color: var(--dark-grey);
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            margin: auto;
+            text-align: left;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-top: 8px solid var(--primary-blue);
+        }
+
+        #instructionsModal h2 {
+            color: var(--primary-blue);
+            margin-top: 0;
+        }
+
+        #instructionsModal ul {
+            padding-left: 20px;
+        }
+
+        #instructionsModal li {
+            margin-bottom: 10px;
+        }
+
+        .timer {
+            font-size: 55vw;
+            /* MASSIVE TIMER */
+            font-weight: bold;
+            color: var(--white);
+            transition: color 0.3s ease-in-out, transform 0.2s;
+            text-shadow: 0 0 50px rgba(255, 255, 255, 0.2);
+        }
+
+        .warning {
+            color: var(--warning);
+            transform: scale(1.05);
+        }
+
+        .danger {
+            color: var(--danger);
+            transform: scale(1.1);
+            animation: pulse 1s infinite alternate;
+        }
+
+        .time-up {
+            font-size: 15vw;
+            /* MASSIVE 'TIME'S UP' TEXT */
+            font-weight: bold;
+            color: var(--danger);
+            animation: shake 0.5s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(231, 76, 60, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0% {
+                transform: rotate(-3deg);
+            }
+
+            50% {
+                transform: rotate(3deg);
+            }
+
+            100% {
+                transform: rotate(-3deg);
+            }
+        }
+
+        @keyframes pulse {
+            from {
+                transform: scale(1.1);
+            }
+
+            to {
+                transform: scale(1.15);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 6vw;
+            }
+
+            button {
+                font-size: 4vw;
+            }
+
+            button.info {
+                font-size: 3vw;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>CPC BIBLE QUIZ</h1>
+        <div class="round-selection">
+            <button onclick="startTimer(10)">Easy (10s)</button>
+            <button onclick="startTimer(15)">Average (15s)</button>
+            <button onclick="startTimer(15)">Difficult (15s)</button>
+            <button onclick="startTimer(15)">Clincher (15s)</button>
+            <button class="reset" onclick="resetTimer()">Reset Timer</button>
+        </div>
+        <button class="info" onclick="showInstructions()">How to use?</button>
+    </div>
+
+    <audio id="alarm" src="beep.mp3"></audio>
+
+    <!-- Timer Modal -->
+    <div id="timerModal" class="modal">
+        <div class="modal-content">
+            <div class="timer" id="timer">00</div>
+        </div>
+    </div>
+
+    <!-- Time's Up Modal -->
+    <div id="timeUpModal" class="modal">
+        <div class="modal-content">
+            <h2 class="time-up">TIME'S UP!</h2>
+        </div>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content-box">
+            <h2>How to Use</h2>
+            <ul>
+                <li><strong>Select a Round:</strong> Click on Easy, Average, Difficult, or Clincher to start the timer
+                    for that round.</li>
+                <li><strong>Easy Round:</strong> Starts with a 10-second countdown.</li>
+                <li><strong>Other Rounds:</strong> Start with a 15-second countdown.</li>
+                <li><strong>Dynamic Colors:</strong> The timer turns orange at 5 seconds and red/pulses at 3 seconds
+                    remaining.</li>
+                <li><strong>Reset:</strong> Use the "Reset Timer" button to stop and clear everything.</li>
+                <li><strong>Dismissing Modals:</strong> Click anywhere on the screen when the timer is finished to reset
+                    and go back.</li>
+            </ul>
+            <button onclick="closeInstructions()" style="width: 100%; margin-top: 10px;">Got it!</button>
+        </div>
+    </div>
+
+    <script>
+        let countdown;
+        let alarmTimeout;
+
+        function startTimer(duration) {
+            resetTimer();
+
+            let timeLeft = duration;
+            const timerDisplay = document.getElementById("timer");
+            const alarm = document.getElementById("alarm");
+            const timerModal = document.getElementById("timerModal");
+            const timeUpModal = document.getElementById("timeUpModal");
+
+            timerDisplay.textContent = timeLeft;
+            timerDisplay.className = "timer";
+            timerModal.style.display = "flex";
+            timeUpModal.style.display = "none";
+
+            countdown = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+
+                if (timeLeft <= 3) {
+                    timerDisplay.classList.add("danger");
+                } else if (timeLeft <= 5) {
+                    timerDisplay.classList.add("warning");
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    alarm.play();
+                    timerModal.style.display = "none";
+                    timeUpModal.style.display = "flex";
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(countdown);
+            const alarm = document.getElementById("alarm");
+            alarm.pause();
+            alarm.currentTime = 0;
+            document.getElementById("timerModal").style.display = "none";
+            document.getElementById("timeUpModal").style.display = "none";
+            document.getElementById("instructionsModal").style.display = "none";
+        }
+
+        function showInstructions() {
+            document.getElementById("instructionsModal").style.display = "flex";
+        }
+
+        function closeInstructions() {
+            document.getElementById("instructionsModal").style.display = "none";
+        }
+
+        // Close modal when clicking anywhere on the screen for time up
+        document.getElementById("timeUpModal").addEventListener("click", function () {
+            resetTimer();
+        });
+
+        document.getElementById("timerModal").addEventListener("click", function () {
+            resetTimer();
+        });
+
+        // Close instructions when clicking outside the box
+        document.getElementById("instructionsModal").addEventListener("click", function (e) {
+            if (e.target.id === "instructionsModal") {
+                closeInstructions();
+            }
+        });
+    </script>
+</body>
+
+</html>
