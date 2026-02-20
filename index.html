@@ -286,12 +286,23 @@
         let canDismiss = false;
 
         function startTimer(duration) {
+            const alarm = document.getElementById("alarm");
+
+            // [NEW] Prime the audio for mobile browsers
+            // This 'unlocks' the audio element during the user's click interaction
+            alarm.play().then(() => {
+                alarm.pause();
+                alarm.currentTime = 0;
+            }).catch(e => {
+                // Silently handle cases where playback might still be blocked or interrupted
+                console.log("Audio priming info:", e);
+            });
+
             resetTimer();
             canDismiss = false;
 
             let timeLeft = duration;
             const timerDisplay = document.getElementById("timer");
-            const alarm = document.getElementById("alarm");
             const timerModal = document.getElementById("timerModal");
             const timeUpModal = document.getElementById("timeUpModal");
 
